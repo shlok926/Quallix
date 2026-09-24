@@ -1,8 +1,12 @@
 import { test, expect } from '../../../src/fixtures';
 import { ContactFactory } from '../../../src/data/factories/contact.factory';
 import { APIResponseValidator } from '../../../src/api/validators/response.validator';
+import { mockAPIServer } from '../../../src/api/mock/mock-api-server';
 
 test.describe('Contact Creation API Tests', () => {
+  test.beforeEach(async () => {
+    mockAPIServer.resetStore();
+  });
   test('@smoke @api POST /api/v1/contacts should create a new contact successfully', async ({ contactClient }) => {
     // 1. Build a valid contact payload using the factory
     const payload = ContactFactory.build({
