@@ -27,7 +27,7 @@
   "author": "Shlok",
   "license": "ISC",
   "dependencies": {
-    "@faker-js/faker": "^10.5.0",
+    "@faker-js/faker": "^10.6.0",
     "@playwright/test": "^1.44.1",
     "dotenv": "^18.0.2",
     "mysql2": "^3.23.1",
