@@ -1,4 +1,4 @@
-import { test } from '../../../src/fixtures';
+import { test, expect } from '../../../src/fixtures';
 import { ContactFactory } from '../../../src/data/factories/contact.factory';
 import { APIResponseValidator } from '../../../src/api/validators/response.validator';
 
@@ -24,21 +24,36 @@ test.describe('Contact Creation API Tests', () => {
   });
 
   test('@smoke @api POST /api/v1/contacts with duplicate phone number should fail in validation', async ({ contactClient, contactSeeder }) => {
-    // 1. Seed an initial contact to establish duplicate criteria
-    const seedPayload = ContactFactory.buildScenario('duplicate');
-    await contactSeeder.seed(seedPayload);
+    // 1. Seed an initial contact with a dedicated test phone
+    const seedPayload = ContactFactory.build({
+      name: 'Primary Contact',
+      company: 'Primary Corp',
+    });
+    const seededContact = await contactSeeder.seed(seedPayload);
+    expect(seededContact.id).toBeDefined();
 
-    // 2. Attempt to create a contact with the same duplicate data
+    // 2. Attempt to create a second contact with the identical phone number
     const duplicatePayload = ContactFactory.build({
-      name: 'Second Contact',
+      name: 'Secondary Duplicate Contact',
       phone: seedPayload.phone,
+      company: 'Secondary Corp',
     });
     
-    // Note: Our mock server handles duplicate routes or returns status based on parameters
-    // In our mock server, it accepts and creates contacts. If we want to simulate duplicate validation,
-    // we can either add a check in the mock server or let the mock server return normal.
-    // For this smoke spec, let's test creating the contact.
+    // 3. Execute duplicate creation request
     const response = await contactClient.createContact(duplicatePayload);
-    APIResponseValidator.expectStatus(response, 201);
+
+    // 4. Assert 409 Conflict rejection with descriptive error payload
+    await APIResponseValidator.expectErrorResponse(
+      response,
+      409,
+      `Contact with phone ${seedPayload.phone} already exists`
+    );
+
+    // 5. Verify the duplicate was not persisted
+    const listResponse = await contactClient.listContacts();
+    const listBody = await listResponse.json();
+    const matchingContacts = listBody.content.filter((c: { phone: string }) => c.phone === seedPayload.phone);
+    expect(matchingContacts.length).toBe(1);
+    expect(matchingContacts[0].id).toBe(seededContact.id);
   });
 });

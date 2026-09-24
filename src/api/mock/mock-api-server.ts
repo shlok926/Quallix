@@ -25,7 +25,9 @@ export class MockAPIServer {
         if (status === 200) return 'OK';
         if (status === 201) return 'Created';
         if (status === 204) return 'No Content';
+        if (status === 400) return 'Bad Request';
         if (status === 404) return 'Not Found';
+        if (status === 409) return 'Conflict';
         return 'Unknown';
       },
       ok: () => status >= 200 && status < 300,
@@ -148,7 +150,17 @@ export class MockAPIServer {
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
                     </select><br/>
-                    <button data-testid="modal-confirm" onclick="document.getElementById('modal').style.display='none'">Confirm</button>
+                    <button data-testid="modal-confirm" onclick="
+                      const name = document.querySelector('[data-testid=form-name]').value;
+                      const company = document.querySelector('[data-testid=form-company]').value;
+                      if (name) {
+                        const tbody = document.querySelector('[data-testid=contacts-table] tbody');
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = '<td>' + name + '</td><td>' + (company || '') + '</td><td><button data-testid=\\'view-btn\\'>View</button></td>';
+                        tbody.appendChild(tr);
+                      }
+                      document.getElementById('modal').style.display='none';
+                    ">Confirm</button>
                     <button data-testid="modal-cancel" onclick="document.getElementById('modal').style.display='none'">Cancel</button>
                   </div>
                 </div>
@@ -226,6 +238,20 @@ export class MockAPIServer {
         const method = request.method();
         if (method === 'POST') {
           const payload = request.postDataJSON();
+          
+          // Enforce unique phone constraint
+          const existingContacts = Array.from(this.inMemoryStore.values());
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const isDuplicate = payload?.phone && existingContacts.some((c: any) => c.phone === payload.phone);
+          if (isDuplicate) {
+            await route.fulfill({
+              status: 409,
+              contentType: 'application/json',
+              body: JSON.stringify({ error: `Contact with phone ${payload.phone} already exists` }),
+            });
+            return;
+          }
+
           const id = faker.string.uuid();
           const contactResponse = {
             id,
@@ -359,6 +385,15 @@ export class MockAPIServer {
         if (url.endsWith('/api/v1/contacts')) {
           if (method === 'POST') {
             const payload = options.data;
+            
+            // Enforce unique phone constraint
+            const existingContacts = Array.from(this.inMemoryStore.values());
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const isDuplicate = payload?.phone && existingContacts.some((c: any) => c.phone === payload.phone);
+            if (isDuplicate) {
+              return this.createMockResponse(409, { error: `Contact with phone ${payload.phone} already exists` }, url);
+            }
+
             const id = faker.string.uuid();
             const contactResponse = {
               id,
