@@ -5,6 +5,9 @@ on:
     - cron: '0 2 * * *' # Run nightly at 02:00 UTC
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   regression-test:
     name: Run Regression Tests
