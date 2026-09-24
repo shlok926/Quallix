@@ -129,7 +129,7 @@ platione-qa-framework/
 ├── scripts/                 # CLI tools for data seeding and db resets
 │   ├── seed-api.ts          # Programmatic REST API data seeding script
 │   ├── seed-db.ts           # Direct database SQL seeding script
-│   └── reset-db.ts          # Script to recreate fresh database tables
+│   └── reset-db.ts          # Script to recreate fresh database tables (Protected by DatabaseSafetyGuard)
 ├── src/                     # Source folder containing the core framework
 │   ├── api/                 # REST clients, builders, validators, and mocks
 │   ├── data/                # Data factories and seeder registry classes
@@ -168,7 +168,11 @@ npx playwright test --grep @api
 # 6. Run smoke tests
 npx playwright test --grep @smoke
 
-# 7. View HTML report
+# 7. (Optional) Database Setup & Reset
+npm run seed:db                      # Seed baseline database records
+npm run reset:db -- --confirm        # Destructively reset DB (Restricted to local/test/qa environments)
+
+# 8. View HTML report
 npx playwright show-report reports/html
 ```
 
