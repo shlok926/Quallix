@@ -26,22 +26,26 @@ export default defineConfig({
 
   projects: [
     { 
+      name: 'api',      
+      testMatch: /.*tests\/api\/.*\.spec\.ts/,
+      use: {
+        // API tests do not require browser setup
+      } 
+    },
+    { 
       name: 'chromium', 
+      testMatch: /.*tests\/(ui|e2e)\/.*\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] } 
     },
     { 
       name: 'firefox',  
+      testMatch: /.*tests\/(ui|e2e)\/.*\.spec\.ts/,
       use: { ...devices['Desktop Firefox'] } 
     },
     { 
       name: 'webkit',   
+      testMatch: /.*tests\/(ui|e2e)\/.*\.spec\.ts/,
       use: { ...devices['Desktop Safari'] } 
-    },
-    { 
-      name: 'api',      
-      use: {
-        // API tests do not require browser setup
-      } 
     }
   ]
 });

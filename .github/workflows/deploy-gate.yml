@@ -46,11 +46,13 @@ jobs:
         run: cp .env.example .env
 
       - name: Run Complete Test Suite
-        run: npx playwright test --grep-invert "@e2e|@ui"
+        run: npx playwright test --project=api --project=chromium
         env:
           APP_BASE_URL: http://localhost:4200
           API_BASE_URL: http://localhost:8080
           ENVIRONMENT: qa
+          TEST_USER_EMAIL: qa@platione.com
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD || 'QA_PR_Gate_Test_Password' }}
 
       - name: Upload PR Test Report
         if: always()
