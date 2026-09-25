@@ -1,4 +1,5 @@
 import { test, expect } from '../../src/fixtures';
+import { ConfigManager } from '../../src/utils/config';
 
 test.describe('End-to-End Sales Assist Rep Workflow', () => {
   test('@smoke @e2e should complete the full lifecycle from login to lead action planning', async ({
@@ -12,7 +13,7 @@ test.describe('End-to-End Sales Assist Rep Workflow', () => {
     await loginPage.verifyUrl();
 
     // 2. Perform Login
-    await loginPage.login('qa@platione.com', 'QA_Password123');
+    await loginPage.login(ConfigManager.testUserEmail, ConfigManager.testUserPassword);
 
     // 3. Verify Landing on Dashboard
     await dashboardPage.verifyUrl();
