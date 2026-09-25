@@ -10,6 +10,7 @@
     "test:api": "playwright test --grep @api",
     "test:ui": "playwright test --grep @ui",
     "test:e2e": "playwright test --grep @e2e",
+    "test:security": "playwright test --grep @security",
     "test:headed": "playwright test --headed",
     "lint": "eslint src/ tests/ --ext .ts",
     "typecheck": "tsc --noEmit",

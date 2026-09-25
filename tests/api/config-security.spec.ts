@@ -13,7 +13,7 @@ test.describe('FIX-04 — Configuration & Credential Hardening Tests', () => {
   // ---------------------------------------------------------------------------
   // 1. Sensitive Credential Fail-Closed Validation
   // ---------------------------------------------------------------------------
-  test('Test 1 — should throw descriptive error when TEST_USER_PASSWORD is missing (Fail-Closed)', () => {
+  test('@security @api Test 1 — should throw descriptive error when TEST_USER_PASSWORD is missing (Fail-Closed)', () => {
     delete process.env.TEST_USER_PASSWORD;
 
     expect(() => ConfigManager.testUserPassword).toThrow(
@@ -21,7 +21,7 @@ test.describe('FIX-04 — Configuration & Credential Hardening Tests', () => {
     );
   });
 
-  test('Test 2 — should throw descriptive error when TEST_USER_PASSWORD is an empty string', () => {
+  test('@security @api Test 2 — should throw descriptive error when TEST_USER_PASSWORD is an empty string', () => {
     process.env.TEST_USER_PASSWORD = '';
 
     expect(() => ConfigManager.testUserPassword).toThrow(
@@ -29,7 +29,7 @@ test.describe('FIX-04 — Configuration & Credential Hardening Tests', () => {
     );
   });
 
-  test('Test 3 — should never fall back to hardcoded default password when TEST_USER_PASSWORD is unset', () => {
+  test('@security @api Test 3 — should never fall back to hardcoded default password when TEST_USER_PASSWORD is unset', () => {
     delete process.env.TEST_USER_PASSWORD;
 
     let accessedValue = '';
@@ -44,7 +44,7 @@ test.describe('FIX-04 — Configuration & Credential Hardening Tests', () => {
     expect(accessedValue).toBe('');
   });
 
-  test('Test 4 — should throw descriptive error when TEST_USER_EMAIL is missing', () => {
+  test('@security @api Test 4 — should throw descriptive error when TEST_USER_EMAIL is missing', () => {
     delete process.env.TEST_USER_EMAIL;
 
     expect(() => ConfigManager.testUserEmail).toThrow(
@@ -52,7 +52,7 @@ test.describe('FIX-04 — Configuration & Credential Hardening Tests', () => {
     );
   });
 
-  test('Test 5 — should successfully return TEST_USER_PASSWORD and TEST_USER_EMAIL when explicitly configured', () => {
+  test('@security @api Test 5 — should successfully return TEST_USER_PASSWORD and TEST_USER_EMAIL when explicitly configured', () => {
     process.env.TEST_USER_EMAIL = 'custom-qa@platione.com';
     process.env.TEST_USER_PASSWORD = 'CustomSecureSecret987!';
 
@@ -63,7 +63,7 @@ test.describe('FIX-04 — Configuration & Credential Hardening Tests', () => {
   // ---------------------------------------------------------------------------
   // 2. Safe Non-Sensitive Development Defaults Preservation
   // ---------------------------------------------------------------------------
-  test('Test 6 — should retain safe development defaults for non-sensitive settings', () => {
+  test('@security @api Test 6 — should retain safe development defaults for non-sensitive settings', () => {
     delete process.env.DB_HOST;
     delete process.env.DB_PORT;
     delete process.env.DB_NAME;
@@ -77,7 +77,7 @@ test.describe('FIX-04 — Configuration & Credential Hardening Tests', () => {
     expect(ConfigManager.apiBaseUrl).toBe('http://localhost:8080');
   });
 
-  test('Test 7 — should not fall back to fake hardcoded credentials for DB_PASSWORD', () => {
+  test('@security @api Test 7 — should not fall back to fake hardcoded credentials for DB_PASSWORD', () => {
     delete process.env.DB_PASSWORD;
 
     expect(ConfigManager.dbPassword).not.toBe('your_db_password_here');
@@ -87,7 +87,7 @@ test.describe('FIX-04 — Configuration & Credential Hardening Tests', () => {
   // ---------------------------------------------------------------------------
   // 3. FIX-01 Database Reset Safety Boundary Compatibility
   // ---------------------------------------------------------------------------
-  test('Test 8 — FIX-01 DatabaseSafetyGuard remains strictly enforced alongside hardened config', () => {
+  test('@security @api Test 8 — FIX-01 DatabaseSafetyGuard remains strictly enforced alongside hardened config', () => {
     // Production environment must remain blocked
     expect(() =>
       DatabaseSafetyGuard.assertResetAllowed({
