@@ -11,6 +11,7 @@
     "test:ui": "playwright test --grep @ui",
     "test:e2e": "playwright test --grep @e2e",
     "test:security": "playwright test --grep @security",
+    "test:perf": "playwright test --grep @performance",
     "test:headed": "playwright test --headed",
     "lint": "eslint src/ tests/ --ext .ts",
     "typecheck": "tsc --noEmit",

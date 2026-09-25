@@ -8,8 +8,8 @@ dist/
 .env.staging
 .env.prod-like
 !.env.example
-reports/html/
-reports/junit/
+reports/
+logs/
 test-results/
 playwright-report/
 *.js.map
