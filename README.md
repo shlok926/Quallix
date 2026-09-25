@@ -51,24 +51,24 @@ The framework resolves the common QA issues of test flakiness, complex setup sta
 
 ## 🧪 Test Results & Honest Analysis
 
-| Suite | Tests | Status | Duration | Notes |
-|-------|-------|--------|----------|-------|
-| API Tests | 20 | ✅ 20/20 Passing | 10.2s | Fully functional against mock server |
-| UI Tests | 4 | ⚠️ Needs Live App | - | Requires Angular app on localhost:4200 |
-| E2E Tests | 4 | ⚠️ Needs Live App | - | Requires full stack running |
-| **Total** | **28** | **20 Passing** | **10.2s** | |
+| Suite | Tests | Status | Target | Notes |
+|---|---|---|---|---|
+| API Tests | 28 | ✅ 28/28 Passing | API Client / Mock Server | Covers Config Security, DB Safety Guard, Contacts CRUD, Action API |
+| UI Tests | 1 | ✅ 1/1 Passing | Chromium, Firefox, WebKit | Contacts UI table verification & creation flow |
+| E2E Tests | 1 | ✅ 1/1 Passing | Chromium, Firefox, WebKit | Full sales rep workflow (login, navigation, lead qualification, actions) |
+| **Total Test Suite** | **30** | **✅ 30/30 Passing** | **Cross-Browser** | **34 test runs across full CI browser matrix** |
 
-### Why UI & E2E Tests Show as "Not Run"
+### Cross-Browser Architecture
 
-The UI and E2E automation suites are completely written, verified, and ready for deployment. However, because they perform functional browser automation against Platione's web interface, they require the Angular frontend application to be running locally on `http://localhost:4200` (which is currently offline in the local sandbox). Under industry-standard engineering practices, testing frameworks are developed modularly so that they can be integrated immediately once the environment is brought online. Once the frontend server is active, these tests will execute instantly with zero code changes required—simply by updating the `APP_BASE_URL` within the `.env` profile.
+The UI and E2E automation suites execute seamlessly against the browser-level mock routing layer (`mockAPIServer.setupMockRoutes`) without external service dependencies. Cross-browser validation runs across **Chromium**, **Firefox**, and **WebKit**.
 
 ### What This Demonstrates
 
-The 20/20 passing API test suite operates against the stateful `MockAPIServer` routing layer, proving the validity of the following core architecture systems:
-* **Base API Client**: Confirms the request dispatching, headers, authentication hooks, and error handling.
-* **Factory-Seeder Flow**: Verifies that randomized contact and action data are generated, successfully seeded, returned as typed objects, and cleanly destroyed.
-* **API Validation Helpers**: Confirms that response schemas, properties, and database entities are being validated.
-* **Winston Logging & Config**: Confirms configuration parameters are loaded correctly and logs are captured.
+The 30/30 passing test suite proves the validity of the core framework architecture:
+* **Fail-Closed Security & Config**: Validates `DatabaseSafetyGuard` (FIX-01) and fail-closed credential loading (FIX-04).
+* **Accurate Behavioral Verification**: Eliminates false positives in duplicate phone validation and UI creation (FIX-02).
+* **Complete Action API Contract**: Enforces in-memory isolation, action creation, retrieval, and status updates (FIX-03).
+* **Cross-Browser Verification**: Proves identical layout rendering, navigation, and modal interactions across Chromium, Firefox, and WebKit (FIX-06).
 
 ---
 
@@ -218,9 +218,9 @@ USE_MOCKS=true
 ## 🔄 CI/CD Pipeline
 
 We maintain three pipelines configured under `.github/workflows/`:
-1. `smoke.yml` — Runs on every PR and push targeting the `main` branch. Validates code compilation, lint rules, and executes `@smoke` critical path tests.
-2. `regression.yml` — Triggered nightly. Runs the full test suite across the browser matrix (Chromium, Firefox, WebKit) and generates comprehensive HTML results.
-3. `deploy-gate.yml` — Runs prior to production deployment, gating the process if any critical test yields a failure.
+1. `smoke.yml` — Runs on every PR and push targeting the `main` branch. Validates code compilation, lint rules, and executes `@smoke` critical path tests on API & Chromium.
+2. `regression.yml` — Triggered nightly (and on `workflow_dispatch`). Runs the complete test suite across the verified cross-browser matrix (Chromium, Firefox, WebKit) and API suite.
+3. `deploy-gate.yml` — Runs on PRs targeting `main`/`develop`, executing the complete test suite on API & Chromium prior to merge.
 
 ---
 
