@@ -1,13 +1,13 @@
 # 🎭 Quallix — QA Automation Framework
 
-Production-ready Playwright + TypeScript automation framework built from scratch for Platione Sales Assist — a SaaS sales productivity platform.
+Deterministic, stateful Playwright + TypeScript automation framework designed for Platione Sales Assist.
 
 ![Playwright](https://img.shields.io/badge/Playwright-1.44-45ba4b?logo=playwright)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178c6?logo=typescript)
-![Tests](https://img.shields.io/badge/API%20Tests-20%20Passed-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-30%20Passed-brightgreen)
 ![CI](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=github-actions)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)
+![Environment](https://img.shields.io/badge/Environment-Stateful%20Mock-blue)
 
 ---
 
@@ -19,11 +19,12 @@ Production-ready Playwright + TypeScript automation framework built from scratch
 
 ## About the Framework
 
-This repository houses the end-to-end QA Automation Framework developed for **Platione Sales Assist**, a comprehensive sales productivity platform. Designed to validate both frontend user interfaces (built with Angular and Ionic) and backend services (powered by Java Spring Boot and MySQL), the framework ensures high-frequency, reliable releases.
+This repository houses the QA Automation Framework developed for **Platione Sales Assist**. It provides comprehensive automated verification covering REST API clients, Page Object Model user interfaces, and end-to-end sales representative workflows.
 
-As the first QA automation framework built from the ground up for Platione, it introduces a clean separation between data generation, state management, and interaction scripting. It provides a robust suite of tools that supports local test execution against local mock servers as well as continuous verification across shared QA, Staging, and Production-like environments.
+> [!NOTE]
+> **Execution Environment**: Tests in this repository execute against a built-in stateful mock application and routing layer (`MockAPIServer` and browser route interception). Direct live integration with external Java Spring Boot services or live Angular web servers is configurable via `APP_BASE_URL` and `API_BASE_URL`, but is not bundled directly within this repository.
 
-The framework resolves the common QA issues of test flakiness, complex setup states, and database pollution by introducing a decoupled Factory-Seeder architecture, a custom stateful API mock layer, and dependency-injected Playwright fixtures.
+The framework resolves common QA challenges of test flakiness, state pollution, and hardcoded credentials by introducing a decoupled Factory-Seeder architecture, a fail-closed configuration manager (`ConfigManager`), a destructive database reset safety boundary (`DatabaseSafetyGuard`), and dependency-injected Playwright fixtures.
 
 ---
 
@@ -51,30 +52,30 @@ The framework resolves the common QA issues of test flakiness, complex setup sta
 
 ## 🧪 Test Results & Honest Analysis
 
-| Suite | Tests | Status | Duration | Notes |
-|-------|-------|--------|----------|-------|
-| API Tests | 20 | ✅ 20/20 Passing | 10.2s | Fully functional against mock server |
-| UI Tests | 4 | ⚠️ Needs Live App | - | Requires Angular app on localhost:4200 |
-| E2E Tests | 4 | ⚠️ Needs Live App | - | Requires full stack running |
-| **Total** | **28** | **20 Passing** | **10.2s** | |
+| Suite | Tests | Status | Target | Notes |
+|---|---|---|---|---|
+| API Tests | 28 | ✅ 28/28 Passing | API Client / Mock Server | Covers Config Security, DB Safety Guard, Contacts CRUD, Action API |
+| UI Tests | 1 | ✅ 1/1 Passing | Chromium, Firefox, WebKit | Contacts UI table verification & creation flow |
+| E2E Tests | 1 | ✅ 1/1 Passing | Chromium, Firefox, WebKit | Full sales rep workflow (login, navigation, lead qualification, actions) |
+| **Total Test Suite** | **30** | **✅ 30/30 Passing** | **Cross-Browser** | **34 test runs across full CI browser matrix** |
 
-### Why UI & E2E Tests Show as "Not Run"
+### Cross-Browser Architecture
 
-The UI and E2E automation suites are completely written, verified, and ready for deployment. However, because they perform functional browser automation against Platione's web interface, they require the Angular frontend application to be running locally on `http://localhost:4200` (which is currently offline in the local sandbox). Under industry-standard engineering practices, testing frameworks are developed modularly so that they can be integrated immediately once the environment is brought online. Once the frontend server is active, these tests will execute instantly with zero code changes required—simply by updating the `APP_BASE_URL` within the `.env` profile.
+The UI and E2E automation suites execute seamlessly against the browser-level mock routing layer (`mockAPIServer.setupMockRoutes`) without external service dependencies. Cross-browser validation runs across **Chromium**, **Firefox**, and **WebKit**.
 
 ### What This Demonstrates
 
-The 20/20 passing API test suite operates against the stateful `MockAPIServer` routing layer, proving the validity of the following core architecture systems:
-* **Base API Client**: Confirms the request dispatching, headers, authentication hooks, and error handling.
-* **Factory-Seeder Flow**: Verifies that randomized contact and action data are generated, successfully seeded, returned as typed objects, and cleanly destroyed.
-* **API Validation Helpers**: Confirms that response schemas, properties, and database entities are being validated.
-* **Winston Logging & Config**: Confirms configuration parameters are loaded correctly and logs are captured.
+The 30/30 passing test suite proves the validity of the core framework architecture:
+* **Fail-Closed Security & Config**: Validates `DatabaseSafetyGuard` (FIX-01) and fail-closed credential loading (FIX-04).
+* **Accurate Behavioral Verification**: Eliminates false positives in duplicate phone validation and UI creation (FIX-02).
+* **Complete Action API Contract**: Enforces in-memory isolation, action creation, retrieval, and status updates (FIX-03).
+* **Cross-Browser Verification**: Proves identical layout rendering, navigation, and modal interactions across Chromium, Firefox, and WebKit (FIX-06).
 
 ---
 
 ## 📸 Test Evidence
 
-### API Tests — 20/20 Passing
+### Test Execution — 30/30 Passing (34 Multi-Browser Matrix Runs)
 ![Terminal Output](docs/screenshots/terminal-output.png)
 
 ### HTML Report
@@ -87,7 +88,7 @@ The 20/20 passing API test suite operates against the stateful `MockAPIServer` r
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    TEST SUITE LAYER                         │
-│          (api-tests/  ui-tests/  e2e-tests/)                │
+│       (tests/api/     tests/ui/     tests/e2e/)             │
 └──────────────────────────┬──────────────────────────────────┘
                            │ uses
 ┌──────────────────────────▼──────────────────────────────────┐
@@ -104,12 +105,12 @@ The 20/20 passing API test suite operates against the stateful `MockAPIServer` r
          │                 │
 ┌────────▼─────────────────▼─────────────────────────────────┐
 │                    UTILITY LAYER                            │
-│   Config │ Logger │ DB Utils │ Auth │ Screenshots │ Dates  │
+│   Config │ Logger │ DB Utils │ DB Safety │ Auth │ Dates     │
 └──────────────────────────┬─────────────────────────────────┘
                            │
 ┌──────────────────────────▼─────────────────────────────────┐
 │                 ENVIRONMENT LAYER                           │
-│      .env.qa  │  .env.staging  │  .env.prod-like          │
+│        .env.example  │  .env.qa  │  .env.staging            │
 └────────────────────────────────────────────────────────────┘
 ```
 
@@ -118,9 +119,9 @@ The 20/20 passing API test suite operates against the stateful `MockAPIServer` r
 ## 📁 Project Structure
 
 ```
-platione-qa-framework/
+Quallix/
 ├── .github/                 # GitHub Actions workflows and PR templates
-│   └── workflows/           # Smoke, regression, and gate workflow files
+│   └── workflows/           # Smoke, regression, deploy-gate, and CodeQL
 ├── database/                # Database migrations and baseline seeds
 │   ├── migrations/          # SQL scripts to recreate schema tables
 │   └── seeds/               # Baseline seed data for database setup
@@ -131,15 +132,15 @@ platione-qa-framework/
 │   ├── seed-db.ts           # Direct database SQL seeding script
 │   └── reset-db.ts          # Script to recreate fresh database tables (Protected by DatabaseSafetyGuard)
 ├── src/                     # Source folder containing the core framework
-│   ├── api/                 # REST clients, builders, validators, and mocks
+│   ├── api/                 # REST clients, builders, validators, and mock server
 │   ├── data/                # Data factories and seeder registry classes
 │   ├── fixtures/            # Dependency injection context managers
 │   ├── types/               # TypeScript schemas and interface mappings
 │   ├── ui/                  # Page objects and page-level helpers
 │   └── utils/               # Database connectors, loggers, and config utilities
 └── tests/                   # Specification files containing test assertions
-    ├── api/                 # Integration test specs targeting REST endpoints
-    ├── e2e/                 # User flows verifying complete systems
+    ├── api/                 # Integration test specs (Isolated, headless)
+    ├── e2e/                 # User flows verifying complete sales cycles
     └── ui/                  # Page-object-driven user interface tests
 ```
 
@@ -149,30 +150,36 @@ platione-qa-framework/
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/shlok926/platione-qa-framework.git
-cd platione-qa-framework
+git clone https://github.com/shlok926/Quallix.git
+cd Quallix
 
 # 2. Install dependencies
 npm install
 
-# 3. Install Playwright browsers
-npx playwright install chromium
+# 3. Install Playwright browsers (Chromium for standard gates, all for full matrix)
+npx playwright install --with-deps chromium firefox webkit
 
 # 4. Configure environment
 cp .env.example .env
-# Edit .env with your values
+# Edit .env with your environment parameters
 
-# 5. Run API tests (fully functional)
-npx playwright test --grep @api
+# 5. Run API test suite (28 tests, fully isolated against stateful mock)
+npx playwright test --project=api
 
-# 6. Run smoke tests
-npx playwright test --grep @smoke
+# 6. Run UI & E2E browser tests (Chromium)
+npx playwright test --project=chromium
 
-# 7. (Optional) Database Setup & Reset
+# 7. Run complete test suite (API + Chromium)
+npx playwright test --project=api --project=chromium
+
+# 8. Run smoke tests (8 critical path tests)
+npx playwright test --grep "@smoke" --project=api --project=chromium
+
+# 9. (Optional) Database Setup & Reset
 npm run seed:db                      # Seed baseline database records
 npm run reset:db -- --confirm        # Destructively reset DB (Restricted to local/test/qa environments)
 
-# 8. View HTML report
+# 10. View HTML report
 npx playwright show-report reports/html
 ```
 
@@ -180,32 +187,43 @@ npx playwright show-report reports/html
 
 ## ⚙️ Environment Configuration
 
-The framework utilizes standard `.env` configuration files processed via a unified `ConfigManager` utility.
+The framework utilizes standard `.env` configuration files processed via a unified `ConfigManager` utility with strict fail-closed validation for required secrets.
 
 ```properties
-# Target execution environment (qa, staging, prod)
-ENVIRONMENT=qa
-
-# URL targeting the frontend interface
+# Application & API Base URLs
 APP_BASE_URL=http://localhost:4200
-
-# Base gateway routing to backend endpoints
 API_BASE_URL=http://localhost:8080
 
-# Database credentials
-DB_HOST=127.0.0.1
+# Database Configuration (MySQL connection pool)
+DB_HOST=localhost
 DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=root_password
-DB_NAME=platione_sales_assist
+DB_NAME=platione_test
+DB_USER=qa_user
+DB_PASSWORD=
 
-# Flag to bypass the mock interceptor layer
-USE_MOCKS=true
+# Test User Credentials (Required for authenticated flows — fail-closed if missing)
+TEST_USER_EMAIL=qa@platione.com
+TEST_USER_PASSWORD=
+
+# Framework & Execution Controls
+# LOG_LEVEL options: debug, info, warn, error
+LOG_LEVEL=info
+# ENVIRONMENT options: qa, local, test (permitted for db resets), staging, prod-like (protected)
+ENVIRONMENT=qa
+
+# Database Reset Safety Controls (Destructive operations require explicit confirmation)
+# Set to 'true' in CI/automated environments or pass '--confirm' to CLI
+CONFIRM_DB_RESET=false
 ```
 
 ---
 
-## 📈 Scaling Strategy
+## 🛡️ Database Reset Safety Boundary (`DatabaseSafetyGuard`)
+
+Destructive database operations (`scripts/reset-db.ts`) are protected by a fail-closed safety guard (`DatabaseSafetyGuard` in `src/utils/db-safety.ts`):
+* **Environment Restriction**: Reset is permitted only in `local`, `test`, or `qa` environments. Target environments matching `production`, `prod`, `staging`, `live`, or undefined are blocked.
+* **Database Name Safeguard**: Operations targeting databases named `production`, `prod`, or `staging` are rejected.
+* **Confirmation Flag**: Destructive drop/recreate requires explicit CLI flag `--confirm` or environment variable `CONFIRM_DB_RESET=true`.
 
 | Scale | Tests | Strategy |
 |-------|-------|----------|
@@ -218,9 +236,9 @@ USE_MOCKS=true
 ## 🔄 CI/CD Pipeline
 
 We maintain three pipelines configured under `.github/workflows/`:
-1. `smoke.yml` — Runs on every PR and push targeting the `main` branch. Validates code compilation, lint rules, and executes `@smoke` critical path tests.
-2. `regression.yml` — Triggered nightly. Runs the full test suite across the browser matrix (Chromium, Firefox, WebKit) and generates comprehensive HTML results.
-3. `deploy-gate.yml` — Runs prior to production deployment, gating the process if any critical test yields a failure.
+1. `smoke.yml` — Runs on every PR and push targeting the `main` branch. Validates code compilation, lint rules, and executes `@smoke` critical path tests on API & Chromium.
+2. `regression.yml` — Triggered nightly (and on `workflow_dispatch`). Runs the complete test suite across the verified cross-browser matrix (Chromium, Firefox, WebKit) and API suite.
+3. `deploy-gate.yml` — Runs on PRs targeting `main`/`develop`, executing the complete test suite on API & Chromium prior to merge.
 
 ---
 

@@ -15,10 +15,10 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -35,7 +35,7 @@ jobs:
 
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium firefox webkit
 
       - name: Run Typecheck
         run: npm run typecheck
@@ -46,8 +46,8 @@ jobs:
       - name: Copy Env File
         run: cp .env.example .env
 
-      - name: Run Full Regression Test Suite
-        run: npx playwright test --project=api --project=chromium
+      - name: Run Full Cross-Browser Regression Suite
+        run: npx playwright test --project=api --project=chromium --project=firefox --project=webkit
         env:
           APP_BASE_URL: http://localhost:4200
           API_BASE_URL: http://localhost:8080

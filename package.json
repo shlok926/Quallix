@@ -10,6 +10,8 @@
     "test:api": "playwright test --grep @api",
     "test:ui": "playwright test --grep @ui",
     "test:e2e": "playwright test --grep @e2e",
+    "test:security": "playwright test --grep @security",
+    "test:perf": "playwright test --grep @performance",
     "test:headed": "playwright test --headed",
     "lint": "eslint src/ tests/ --ext .ts",
     "typecheck": "tsc --noEmit",
@@ -30,7 +32,7 @@
     "@faker-js/faker": "^10.6.0",
     "@playwright/test": "^1.63.0",
     "dotenv": "^18.0.2",
-    "mysql2": "^3.23.1",
+    "mysql2": "^3.24.4",
     "winston": "^3.13.0"
   },
   "devDependencies": {
