@@ -5,8 +5,8 @@ Thank you for using the **Platione Sales Assist QA Automation Framework**! Here 
 ## 1. Documentation
 
 Before opening an issue, check the existing documentation:
-- [README.md](file:///d:/Desktop/Platione%20Sales%20Assist/README.md) - Project overview, test architecture, and setup instructions.
-- [CONTRIBUTING.md](file:///d:/Desktop/Platione%20Sales%20Assist/CONTRIBUTING.md) - Guidelines for extending tests, page objects, fixtures, and best practices.
+- [README.md](README.md) - Project overview, test architecture, and setup instructions.
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Guidelines for extending tests, page objects, fixtures, and best practices.
 
 ## 2. GitHub Issues
 
@@ -15,4 +15,4 @@ Before opening an issue, check the existing documentation:
 
 ## 3. Security Vulnerabilities
 
-If you discovered a security issue, please **do not open a public issue**. Follow the instructions in [SECURITY.md](file:///d:/Desktop/Platione%20Sales%20Assist/SECURITY.md) to report privately.
+If you discovered a security issue, please **do not open a public issue**. Follow the instructions in [SECURITY.md](SECURITY.md) to report privately.
