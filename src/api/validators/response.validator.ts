@@ -51,6 +51,21 @@ export class APIResponseValidatorClass {
   }
 
   /**
+   * Asserts that the response matches an action entity shape.
+   */
+  async expectActionShape(response: APIResponse): Promise<void> {
+    const body = await response.json();
+    expect(body).toHaveProperty('id');
+    expect(typeof body.id).toBe('string');
+    expect(body).toHaveProperty('contact_id');
+    expect(body).toHaveProperty('type');
+    expect(['call', 'email', 'meeting', 'task']).toContain(body.type);
+    expect(body).toHaveProperty('status');
+    expect(['pending', 'completed', 'cancelled']).toContain(body.status);
+    expect(body).toHaveProperty('due_date');
+  }
+
+  /**
    * Asserts that the response contains error details matching the code and message.
    */
   async expectErrorResponse(response: APIResponse, expectedStatus: number, expectedMessage?: string): Promise<void> {

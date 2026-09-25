@@ -1,10 +1,13 @@
 node_modules/
 dist/
+# Environment and secrets
 .env
+.env.*
+.env.local
 .env.qa
 .env.staging
 .env.prod-like
-.env.local
+!.env.example
 reports/html/
 reports/junit/
 test-results/

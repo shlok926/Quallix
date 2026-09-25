@@ -46,12 +46,14 @@ jobs:
       - name: Copy Env File
         run: cp .env.example .env
 
-      - name: Run Regression Tests
-        run: npm run test:regression -- --grep-invert "@e2e|@ui"
+      - name: Run Full Regression Test Suite
+        run: npx playwright test --project=api --project=chromium
         env:
           APP_BASE_URL: http://localhost:4200
           API_BASE_URL: http://localhost:8080
           ENVIRONMENT: qa
+          TEST_USER_EMAIL: qa@platione.com
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD || 'QA_Regression_Test_Password' }}
 
       - name: Upload Test Report
         if: always()

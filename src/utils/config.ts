@@ -6,9 +6,9 @@ dotenv.config({ path: process.env.DOTENV_CONFIG_PATH || path.resolve(__dirname, 
 
 export class ConfigManager {
   /**
-   * Helper to retrieve a key or throw an descriptive error.
+   * Helper to retrieve a key or throw a descriptive error (Fail-Closed).
    */
-  private static getOrThrow(key: string): string {
+  public static getOrThrow(key: string): string {
     const value = process.env[key];
     if (value === undefined || value === '') {
       throw new Error(`Missing required configuration environment variable: ${key}`);
@@ -17,9 +17,9 @@ export class ConfigManager {
   }
 
   /**
-   * Helper to retrieve a key or return a default fallback.
+   * Helper to retrieve a key or return a safe default fallback.
    */
-  private static getOrDefault(key: string, defaultValue: string): string {
+  public static getOrDefault(key: string, defaultValue: string): string {
     return process.env[key] || defaultValue;
   }
 
@@ -47,16 +47,27 @@ export class ConfigManager {
     return this.getOrDefault('DB_USER', 'qa_user');
   }
 
+  /**
+   * Database password: returns explicitly configured DB_PASSWORD or empty string (standard for local dev).
+   * Never falls back to hardcoded fake/privileged passwords.
+   */
   static get dbPassword(): string {
-    return this.getOrDefault('DB_PASSWORD', 'your_db_password_here');
+    return process.env.DB_PASSWORD || '';
   }
 
+  /**
+   * Test User Email: Required for authenticated flows. Fails closed if missing.
+   */
   static get testUserEmail(): string {
-    return this.getOrDefault('TEST_USER_EMAIL', 'qa@platione.com');
+    return this.getOrThrow('TEST_USER_EMAIL');
   }
 
+  /**
+   * Test User Password: Required for authenticated flows. Fails closed if missing.
+   * Never falls back to hardcoded or default credentials.
+   */
   static get testUserPassword(): string {
-    return this.getOrDefault('TEST_USER_PASSWORD', 'QA_Password123');
+    return this.getOrThrow('TEST_USER_PASSWORD');
   }
 
   static get logLevel(): string {

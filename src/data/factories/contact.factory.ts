@@ -5,7 +5,7 @@ export class ContactFactoryClass implements IFactory<ContactPayload> {
   build(overrides?: Partial<ContactPayload>): ContactPayload {
     return {
       name: faker.person.fullName(),
-      phone: faker.helpers.fromRegExp(/\+91[6-9]\d{9}/),
+      phone: `+91${faker.number.int({ min: 6000000000, max: 9999999999 })}`,
       email: faker.internet.email(),
       company: faker.company.name(),
       status: 'active',
