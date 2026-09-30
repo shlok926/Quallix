@@ -25,15 +25,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Cache Playwright Browsers
-        uses: actions/cache@v6
-        id: playwright-cache
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-
       - name: Install Playwright Browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
 
       - name: Run Typecheck
@@ -48,10 +40,10 @@ jobs:
       - name: Run Complete Test Suite
         run: npx playwright test --project=api --project=chromium
         env:
-          APP_BASE_URL: http://localhost:4200
-          API_BASE_URL: http://localhost:8080
+          APP_BASE_URL: ${{ secrets.APP_BASE_URL || 'http://localhost:4200' }}
+          API_BASE_URL: ${{ secrets.API_BASE_URL || 'http://localhost:8080' }}
           ENVIRONMENT: qa
-          TEST_USER_EMAIL: qa@platione.com
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL || 'qa@platione.com' }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD || 'QA_PR_Gate_Test_Password' }}
 
       - name: Upload PR Test Report
