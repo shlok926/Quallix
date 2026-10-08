@@ -31,7 +31,7 @@
   "dependencies": {
     "@faker-js/faker": "^10.6.0",
     "@playwright/test": "^1.63.0",
-    "dotenv": "^18.0.4",
+    "dotenv": "^18.0.5",
     "mysql2": "^3.24.5",
     "winston": "^3.13.0"
   },
